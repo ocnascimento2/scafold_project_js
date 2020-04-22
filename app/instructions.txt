@@ -160,3 +160,13 @@ sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -
 
 pm2 monit
 
+CI/CD
+
+https://buddy.works/
+
+npm run build
+npx sequelize db:migrate
+pm2 restart server
+
+
+
