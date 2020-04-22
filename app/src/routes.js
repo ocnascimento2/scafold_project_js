@@ -19,13 +19,12 @@ import authUpdateRequest from './app/middlewares/requests/authUpdateRequest';
 const routes = new Router();
 const upload = multer(multerConfig);
 
-routes.get('/', (req, res) => {
-  return res.send('Ok');
-})
-
 routes.post('/sessions', sessionStoreRequest, SessionController.store);
 
 routes.post('/users', userStoreRequest, UserController.store);
+
+routes.get('/', (req, res) => res.send('Ok'));
+
 routes.use(authMiddleware);
 
 routes.get('/auth', AuthController.index);
