@@ -1,0 +1,92 @@
+install docker
+
+yarn install-postgres-database
+
+database postgres credentials
+username: postgres
+password: root
+
+
+Envio de email
+Para ambiente de desenvolvimento será utilizado o mailtrap
+Quando a aplicacao for ao ar utilizar um dos servicos de email disponiveis Ex:
+
+Amazon SES
+Mailgu
+Sparkpost
+Mandril (Mailchimp)
+Gmail (Náo recomendado pois pode ser bloqueado devido a limite de envio)
+
+DEPLOY DIGITAL OCEAN
+create droplet and keep steps
+ssh key
+ssh-keygen
+cd ~/.ssh
+cat id_rsa.pub
+copy content and paste on Digital ocean platform
+
+ssh root@159.65.235.81
+
+senha da ssh gerada foi pde_cfe
+
+apt update
+apt upgrade
+
+adduser deploy
+
+Dar permissoes de administrador
+usermod -aG sudo deploy
+
+Permir o acesso ssh direto no usuario criado
+
+cd /home/deploy/
+mkdir .ssh
+cd .ssh
+cp ~/.ssh/authorized_keys .
+
+chown deploy:deploy authorized_keys
+
+exit
+
+ssh deploy@159.65.235.81
+pde_cfe
+
+install node
+
+git clone https://orlando_nascimento@bitbucket.org/orlando_nascimento/pde_cfe_node.git app
+
+cd app/
+
+npm install
+
+cp .env.example .env
+
+nano .env
+
+Dar permissoes de sudo no docker
+sudo groupadd docker
+sudo usermod -aG docker $USER
+
+exit;
+
+ssh deploy@159.65.235.81
+
+install services (postgres, mongo, redis) using commands for package.json
+
+docker exec -i -t databasepdecfe /bin/sh
+
+su postgres
+
+psql
+
+CREATE DATABASE pde_cfe
+
+npm run build
+
+npm run start
+
+sudo ufw allow 3333
+
+npx sequelize db:migrate
+
+erro ao  criar o banco no postgres verificar
