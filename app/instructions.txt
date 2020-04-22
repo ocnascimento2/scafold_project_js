@@ -73,7 +73,7 @@ ssh deploy@159.65.235.81
 
 install services (postgres, mongo, redis) using commands for package.json
 
-docker exec -i -t databasepdecfe /bin/sh
+docker exec -it databasepdecfe bash
 
 su postgres
 
@@ -89,4 +89,74 @@ sudo ufw allow 3333
 
 npx sequelize db:migrate
 
-erro ao  criar o banco no postgres verificar
+OBS: Caso a conexão com o servidor caia enquanto está rodando o node e vc queira
+parar o processo
+
+lsof -i :3333
+kill -9 PID
+
+Configuraçao pra não desconectar do servidor
+
+sudo nano /etc/ssh/sshd_config
+
+ClientAliveInterval 30
+TCPKeepAlive yes
+ClientAliveCountMax 99999
+
+Save File
+
+sudo service sshd restart
+
+Configurar proxy reverso com subdomínio usando o servidor do Nginx
+
+sudo apt install nginx
+
+sudo ufw allow 80
+
+sudo nano /etc/nginx/sites-available/default
+
+O arquivo deve ficar assim
+
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        server_name _;
+
+        location / {
+                proxy_pass http://localhost:3333;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+        }
+}
+
+Salve e saia do arquivo
+
+sudo service nginx restart
+
+sudo nginx -t
+
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+npm start
+
+Agora é só acessar direto pela porta 80 que o nginx vai redirecionar para a porta 3333 da aplicação
+
+Manter a aplicação up independente de qualquer coisa
+
+sudo npm install -g pm2
+
+pm2 start dist/server.js
+
+pm2 list
+
+pm2 startup systemd
+
+sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u deploy --hp /home/deploy
+
+pm2 monit
+
