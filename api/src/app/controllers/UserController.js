@@ -57,7 +57,17 @@ class UserController {
       return res.status(401).json({ error: 'Password does not match' });
     }
 
-    const { id, name } = await user.update(req.body);
+    await user.update(req.body);
+
+    const { id, name, avatar } = User.findByPk(req.userId, {
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['id', 'path', 'url'],
+        }
+      ]
+    })
 
     await Notification.create({
       content: `Os dados do usuário: ${name} foram alterados`,
@@ -68,6 +78,7 @@ class UserController {
       id,
       name,
       email,
+      avatar,
     });
   }
 }
